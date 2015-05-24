@@ -21,7 +21,7 @@
   },
   "autoload": {
     "psr-4": {
-      "TimeBenchmark\\": "src/TimeBenchmark"
+      "TimeBenchmark\\": "src/TimeBenchmark/"
     }
   }
 }

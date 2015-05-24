@@ -1,9 +1,6 @@
 <?php
 namespace TimeBenchmark;
 
-require_once dirname(__DIR__) . '/../src/TimeBenchmark/Stopwatch.php';
-require_once dirname(__DIR__) . '/../src/TimeBenchmark/StopwatchException.php';
-
 class StopwatchTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  Stopwatch */

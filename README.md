@@ -42,15 +42,16 @@ $stopwatch->wasStopped();
 Another functionality also included is related to steps (or laps).
 When a stopwatch is running steps can be marked without affecting the stopwatch status with:
 ``` php
-$stopwatch->step();
+$stopwatch->step($stepName);
 ```
+$stepName is the name of the step and must not be reused for the same stopwatch.
 
 The number of steps can be retrived with
 ``` php
 $stopwatch->getStepsNumber();
 ```
 
-Also there are three methods for retriving the time difference of all steps:
+There are three methods for retriving the time difference between start and each of the steps. The result is an array indexed by the step name.
 ``` php
 $seconds = $stopwatch->getElapsedStepsSeconds();
 $milliseconds = $stopwatch->getElapsedStepsMilliseconds();

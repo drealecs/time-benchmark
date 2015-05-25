@@ -8,7 +8,7 @@ Stopwatch
 
 An instance of the stopwatch can be created with the static methods:
 ``` php
-$stopwatch = Stopwatch::createUnstarted();
+$stopwatch = Stopwatch::create();
 ```
 or
 ``` php

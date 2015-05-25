@@ -1,7 +1,7 @@
 <?php
 namespace TimeBenchmark;
 
-class Stopwatch
+final class Stopwatch
 {
     private $startTime = null;
     private $stopTime = null;
@@ -19,7 +19,7 @@ class Stopwatch
         return $instance;
     }
 
-    public static function createUnstarted()
+    public static function create()
     {
         return new Stopwatch();
     }

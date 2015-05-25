@@ -8,7 +8,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->stopWatch = Stopwatch::createUnstarted();
+        $this->stopWatch = Stopwatch::create();
     }
 
     public function testCreateStartedAndStopStatus()
@@ -28,7 +28,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateUnstartedAndStopStatus()
     {
-        $stopWatch = Stopwatch::createUnstarted();
+        $stopWatch = Stopwatch::create();
 
         $this->assertFalse($stopWatch->wasStarted());
         $this->assertFalse($stopWatch->isRunning());

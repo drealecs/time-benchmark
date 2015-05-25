@@ -59,7 +59,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \TimeBenchmark\StopwatchException
-     * @expectedExceptionMessage Stopwatch is not started
+     * @expectedExceptionMessage Stopwatch was not started
      */
     public function testCannotStopWhenNotStarted()
     {
@@ -120,7 +120,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \TimeBenchmark\StopwatchException
-     * @expectedExceptionMessage Stopwatch is not started
+     * @expectedExceptionMessage Stopwatch was not started
      */
     public function testCannotStepWhenNotStarted()
     {
@@ -129,7 +129,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \TimeBenchmark\StopwatchException
-     * @expectedExceptionMessage Stopwatch is stopped
+     * @expectedExceptionMessage Stopwatch was already stopped
      */
     public function testCannotStepWhenStopped()
     {
@@ -196,7 +196,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \TimeBenchmark\StopwatchException
-     * @expectedExceptionMessage Stopwatch is not started
+     * @expectedExceptionMessage Stopwatch was not started
      */
     public function testElapsedIsNotWorkingWithoutStarting()
     {
@@ -205,7 +205,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \TimeBenchmark\StopwatchException
-     * @expectedExceptionMessage Stopwatch is not started
+     * @expectedExceptionMessage Stopwatch was not started
      */
     public function testElapsedStepsIsNotWorkingWithoutStarting()
     {

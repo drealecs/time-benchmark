@@ -26,7 +26,7 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($stopWatch->wasStopped());
     }
 
-    public function testCreateUnstartedAndStopStatus()
+    public function testCreateAndStopStatus()
     {
         $stopWatch = Stopwatch::create();
 

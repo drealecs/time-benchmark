@@ -349,23 +349,23 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
     public function testElapsedStepsWithPause()
     {
         $this->stopWatch->start();
-        usleep(1500);
+        usleep(2500);
         $this->stopWatch->pause();
-        usleep(8000);
+        usleep(32000);
         $this->stopWatch->step('step1');
-        usleep(8000);
+        usleep(32000);
         $this->stopWatch->resume();
-        usleep(2000);
-        $this->stopWatch->pause();
-        usleep(8000);
-        $this->stopWatch->resume();
-        usleep(2000);
-        $this->stopWatch->step('step2');
         usleep(4000);
         $this->stopWatch->pause();
+        usleep(32000);
+        $this->stopWatch->resume();
+        usleep(4000);
+        $this->stopWatch->step('step2');
         usleep(8000);
+        $this->stopWatch->pause();
+        usleep(32000);
         $this->stopWatch->step('step3');
-        usleep(8000);
+        usleep(32000);
         $this->stopWatch->stop();
 
         $elapsedSteps = $this->stopWatch->getElapsedStepsMilliseconds();
@@ -373,11 +373,11 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('step1', $elapsedSteps);
         $this->assertArrayHasKey('step2', $elapsedSteps);
         $this->assertArrayHasKey('step3', $elapsedSteps);
-        $this->assertGreaterThanOrEqual(1, $elapsedSteps['step1']);
-        $this->assertLessThan(4, $elapsedSteps['step1']);
-        $this->assertGreaterThanOrEqual(5, $elapsedSteps['step2']);
-        $this->assertLessThan(8, $elapsedSteps['step2']);
-        $this->assertGreaterThanOrEqual(9, $elapsedSteps['step3']);
-        $this->assertLessThan(12, $elapsedSteps['step3']);
+        $this->assertGreaterThanOrEqual(2, $elapsedSteps['step1']);
+        $this->assertLessThan(10, $elapsedSteps['step1']);
+        $this->assertGreaterThanOrEqual(10, $elapsedSteps['step2']);
+        $this->assertLessThan(18, $elapsedSteps['step2']);
+        $this->assertGreaterThanOrEqual(18, $elapsedSteps['step3']);
+        $this->assertLessThan(26, $elapsedSteps['step3']);
     }
 }

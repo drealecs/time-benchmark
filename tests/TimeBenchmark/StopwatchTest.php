@@ -152,20 +152,20 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
     public function testElapsedStartStop()
     {
         $this->stopWatch->start();
-        usleep(1500);
+        usleep(2500);
         $this->stopWatch->stop();
         $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        $this->assertGreaterThanOrEqual(1, $elapsed);
-        $this->assertLessThan(4, $elapsed);
+        $this->assertGreaterThanOrEqual(2, $elapsed);
+        $this->assertLessThan(10, $elapsed);
     }
 
     public function testElapsedStartWithoutStop()
     {
         $this->stopWatch->start();
-        usleep(1500);
+        usleep(2500);
         $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        $this->assertGreaterThanOrEqual(1, $elapsed);
-        $this->assertLessThan(4, $elapsed);
+        $this->assertGreaterThanOrEqual(2, $elapsed);
+        $this->assertLessThan(10, $elapsed);
     }
 
     public function testElapsedStepsWithNoSteps()
@@ -178,21 +178,21 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
     public function testElapsedStepsWorks()
     {
         $this->stopWatch->start();
-        usleep(1500);
+        usleep(2500);
         $this->stopWatch->step('step1');
-        usleep(4000);
-        $this->stopWatch->step('step2');
         usleep(8000);
+        $this->stopWatch->step('step2');
+        usleep(32000);
         $this->stopWatch->stop();
 
         $elapsedSteps = $this->stopWatch->getElapsedStepsMilliseconds();
         $this->assertCount(2, $elapsedSteps);
         $this->assertArrayHasKey('step1', $elapsedSteps);
         $this->assertArrayHasKey('step2', $elapsedSteps);
-        $this->assertGreaterThanOrEqual(1, $elapsedSteps['step1']);
-        $this->assertLessThan(4, $elapsedSteps['step1']);
-        $this->assertGreaterThanOrEqual(5, $elapsedSteps['step2']);
-        $this->assertLessThan(8, $elapsedSteps['step2']);
+        $this->assertGreaterThanOrEqual(2, $elapsedSteps['step1']);
+        $this->assertLessThan(10, $elapsedSteps['step1']);
+        $this->assertGreaterThanOrEqual(10, $elapsedSteps['step2']);
+        $this->assertLessThan(18, $elapsedSteps['step2']);
     }
 
 
@@ -323,27 +323,27 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
     public function testElapsedStartPauseResumeStop()
     {
         $this->stopWatch->start();
-        usleep(1000);
+        usleep(1500);
         $this->stopWatch->pause();
-        usleep(8000);
+        usleep(32000);
         $this->stopWatch->resume();
-        usleep(500);
+        usleep(1000);
         $this->stopWatch->stop();
         $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        $this->assertGreaterThanOrEqual(1, $elapsed);
-        $this->assertLessThan(4, $elapsed);
+        $this->assertGreaterThanOrEqual(2, $elapsed);
+        $this->assertLessThan(10, $elapsed);
     }
 
     public function testElapsedStartPauseStop()
     {
         $this->stopWatch->start();
-        usleep(1500);
+        usleep(2500);
         $this->stopWatch->pause();
-        usleep(8000);
+        usleep(32000);
         $this->stopWatch->stop();
         $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        $this->assertGreaterThanOrEqual(1, $elapsed);
-        $this->assertLessThan(4, $elapsed);
+        $this->assertGreaterThanOrEqual(2, $elapsed);
+        $this->assertLessThan(10, $elapsed);
     }
 
     public function testElapsedStepsWithPause()

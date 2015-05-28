@@ -6,6 +6,8 @@ final class Stopwatch
     private $startTime = null;
     private $stopTime = null;
     private $stepTimes = [];
+    private $pauseTimes = [];
+    private $resumeTimes = [];
 
     private function __construct()
     {
@@ -45,6 +47,20 @@ final class Stopwatch
         $this->stepTimes[$name] = microtime(false);
     }
 
+    public function pause()
+    {
+        $this->validateIsRunning();
+        $this->validateIsNotPaused();
+        $this->pauseTimes[] = microtime(false);
+    }
+
+    public function resume()
+    {
+        $this->validateIsRunning();
+        $this->validateIsPaused();
+        $this->resumeTimes[] = microtime(false);
+    }
+
     public function wasStarted()
     {
         return null !== $this->startTime;
@@ -58,6 +74,11 @@ final class Stopwatch
     public function wasStopped()
     {
         return null !== $this->stopTime;
+    }
+
+    public function isPaused()
+    {
+        return null !== $this->startTime && null === $this->stopTime && count($this->pauseTimes) === 1 + count($this->resumeTimes);
     }
 
     public function getStepsNumber()
@@ -105,7 +126,17 @@ final class Stopwatch
             $stopTime = $this->stopTime;
         }
 
-        return $this->calculateDifference($this->startTime, $stopTime, $multiplier);
+        $pauseDifference = 0;
+        foreach ($this->pauseTimes as $pauseTimeIndex => $pauseTime) {
+            if (isset($this->resumeTimes[$pauseTimeIndex])) {
+                $resumeTime = $this->resumeTimes[$pauseTimeIndex];
+                $pauseDifference += $this->calculateDifference($pauseTime, $resumeTime, $multiplier);
+            } else {
+                $stopTime = $pauseTime;
+            }
+        }
+
+        return $this->calculateDifference($this->startTime, $stopTime, $multiplier) - $pauseDifference;
     }
 
     private function computeElapsedSteps($multiplier = 1)
@@ -113,8 +144,43 @@ final class Stopwatch
         $this->validateWasStarted();
 
         $differenceSteps = [];
+        $pauseDifference = 0;
+        $pauseTimeIndex = 0;
+        $pauseState = false;
+        $pauseLastTime = null;
         foreach ($this->stepTimes as $stepName => $stepTime) {
-            $differenceSteps[$stepName] = $this->calculateDifference($this->startTime, $stepTime, $multiplier);
+            $stepReached = false;
+            do {
+                if (!$pauseState) {
+                    if (isset($this->pauseTimes[$pauseTimeIndex])) {
+                        $pauseTime = $this->pauseTimes[$pauseTimeIndex];
+                        if ($pauseTime < $stepTime) {
+                            $pauseState = true;
+                            $pauseLastTime = $pauseTime;
+                        } else {
+                            $stepReached = true;
+                        }
+                    } else {
+                        $stepReached = true;
+                    }
+                } else {
+                    if (isset($this->resumeTimes[$pauseTimeIndex])) {
+                        $resumeTime = $this->resumeTimes[$pauseTimeIndex];
+                        if ($resumeTime < $stepTime) {
+                            $pauseState = false;
+                            $pauseTimeIndex++;
+                            $pauseDifference += $this->calculateDifference($pauseLastTime, $resumeTime, $multiplier);
+                        } else {
+                            $stepTime = $pauseLastTime;
+                            $stepReached = true;
+                        }
+                    } else {
+                        $stepTime = $pauseLastTime;
+                        $stepReached = true;
+                    }
+                }
+            } while (!$stepReached);
+            $differenceSteps[$stepName] = $this->calculateDifference($this->startTime, $stepTime, $multiplier) - $pauseDifference;
         }
 
         return $differenceSteps;
@@ -153,5 +219,19 @@ final class Stopwatch
     {
         $this->validateWasStarted();
         $this->validateWasNotStopped();
+    }
+
+    private function validateIsNotPaused()
+    {
+        if (count($this->pauseTimes) === 1 + count($this->resumeTimes)) {
+            throw new StopwatchException('Stopwatch is already paused');
+        }
+    }
+
+    private function validateIsPaused()
+    {
+        if (count($this->pauseTimes) === count($this->resumeTimes)) {
+            throw new StopwatchException('Stopwatch is not paused');
+        }
     }
 }

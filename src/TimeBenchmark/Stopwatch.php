@@ -144,8 +144,43 @@ final class Stopwatch
         $this->validateWasStarted();
 
         $differenceSteps = [];
+        $pauseDifference = 0;
+        $pauseTimeIndex = 0;
+        $pauseState = false;
+        $pauseLastTime = null;
         foreach ($this->stepTimes as $stepName => $stepTime) {
-            $differenceSteps[$stepName] = $this->calculateDifference($this->startTime, $stepTime, $multiplier);
+            $stepReached = false;
+            do {
+                if (!$pauseState) {
+                    if (isset($this->pauseTimes[$pauseTimeIndex])) {
+                        $pauseTime = $this->pauseTimes[$pauseTimeIndex];
+                        if ($pauseTime < $stepTime) {
+                            $pauseState = true;
+                            $pauseLastTime = $pauseTime;
+                        } else {
+                            $stepReached = true;
+                        }
+                    } else {
+                        $stepReached = true;
+                    }
+                } else {
+                    if (isset($this->resumeTimes[$pauseTimeIndex])) {
+                        $resumeTime = $this->resumeTimes[$pauseTimeIndex];
+                        if ($resumeTime < $stepTime) {
+                            $pauseState = false;
+                            $pauseTimeIndex++;
+                            $pauseDifference += $this->calculateDifference($pauseLastTime, $resumeTime, $multiplier);
+                        } else {
+                            $stepTime = $pauseLastTime;
+                            $stepReached = true;
+                        }
+                    } else {
+                        $stepTime = $pauseLastTime;
+                        $stepReached = true;
+                    }
+                }
+            } while (!$stepReached);
+            $differenceSteps[$stepName] = $this->calculateDifference($this->startTime, $stepTime, $multiplier) - $pauseDifference;
         }
 
         return $differenceSteps;

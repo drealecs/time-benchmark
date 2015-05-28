@@ -126,7 +126,17 @@ final class Stopwatch
             $stopTime = $this->stopTime;
         }
 
-        return $this->calculateDifference($this->startTime, $stopTime, $multiplier);
+        $pauseDifference = 0;
+        foreach ($this->pauseTimes as $pauseTimeIndex => $pauseTime) {
+            if (isset($this->resumeTimes[$pauseTimeIndex])) {
+                $resumeTime = $this->resumeTimes[$pauseTimeIndex];
+                $pauseDifference += $this->calculateDifference($pauseTime, $resumeTime, $multiplier);
+            } else {
+                $stopTime = $pauseTime;
+            }
+        }
+
+        return $this->calculateDifference($this->startTime, $stopTime, $multiplier) - $pauseDifference;
     }
 
     private function computeElapsedSteps($multiplier = 1)

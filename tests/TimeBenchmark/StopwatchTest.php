@@ -318,6 +318,30 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
         $this->stopWatch->pause();
     }
 
+    public function testElapsedStartPauseResumeStop()
+    {
+        $this->stopWatch->start();
+        usleep(1500);
+        $this->stopWatch->pause();
+        usleep(8000);
+        $this->stopWatch->resume();
+        usleep(500);
+        $this->stopWatch->stop();
+        $elapsed = $this->stopWatch->getElapsedMilliseconds();
+        $this->assertGreaterThanOrEqual(2, $elapsed);
+        $this->assertLessThan(5, $elapsed);
+    }
 
+    public function testElapsedStartPauseStop()
+    {
+        $this->stopWatch->start();
+        usleep(1500);
+        $this->stopWatch->pause();
+        usleep(8000);
+        $this->stopWatch->stop();
+        $elapsed = $this->stopWatch->getElapsedMilliseconds();
+        $this->assertGreaterThanOrEqual(1, $elapsed);
+        $this->assertLessThan(4, $elapsed);
+    }
 
 }

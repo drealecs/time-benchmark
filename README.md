@@ -58,4 +58,9 @@ $milliseconds = $stopwatch->getElapsedStepsMilliseconds();
 $microseconds = $stopwatch->getElapsedStepsMicroseconds();
 ```
 
-There is a plan for `pause()` and `resume()` functionalities.
+There is support for pausing the stopwatch. The methods to do this are:
+``` php
+$stopwatch->pause();
+$stopwatch->resume();
+```
+Of course pausing and resuming is as fast as possible and the calculation is done within the `getElapsed*` methods.

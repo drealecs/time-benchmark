@@ -6,6 +6,8 @@ final class Stopwatch
     private $startTime = null;
     private $stopTime = null;
     private $stepTimes = [];
+    private $pauseTimes = [];
+    private $resumeTimes = [];
 
     private function __construct()
     {
@@ -45,6 +47,20 @@ final class Stopwatch
         $this->stepTimes[$name] = microtime(false);
     }
 
+    public function pause()
+    {
+        $this->validateIsRunning();
+        $this->validateIsNotPaused();
+        $this->pauseTimes[] = microtime(false);
+    }
+
+    public function resume()
+    {
+        $this->validateIsRunning();
+        $this->validateIsPaused();
+        $this->resumeTimes[] = microtime(false);
+    }
+
     public function wasStarted()
     {
         return null !== $this->startTime;
@@ -58,6 +74,11 @@ final class Stopwatch
     public function wasStopped()
     {
         return null !== $this->stopTime;
+    }
+
+    public function isPaused()
+    {
+        return null !== $this->startTime && null === $this->stopTime && count($this->pauseTimes) === 1 + count($this->resumeTimes);
     }
 
     public function getStepsNumber()
@@ -153,5 +174,19 @@ final class Stopwatch
     {
         $this->validateWasStarted();
         $this->validateWasNotStopped();
+    }
+
+    private function validateIsNotPaused()
+    {
+        if (count($this->pauseTimes) === 1 + count($this->resumeTimes)) {
+            throw new StopwatchException('Stopwatch is already paused');
+        }
+    }
+
+    private function validateIsPaused()
+    {
+        if (count($this->pauseTimes) === count($this->resumeTimes)) {
+            throw new StopwatchException('Stopwatch is not paused');
+        }
     }
 }

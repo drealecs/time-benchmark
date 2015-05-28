@@ -1,4 +1,4 @@
-drealecs/time-benchmark
+drealecs/time-benchmark [![Build Status](https://travis-ci.org/drealecs/time-benchmark.svg?branch=master)](https://travis-ci.org/drealecs/time-benchmark)
 =============
 
 Library for timing execution and benchmarking

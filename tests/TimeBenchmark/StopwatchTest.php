@@ -211,4 +211,113 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
     {
         $this->stopWatch->getElapsedStepsMilliseconds();
     }
+
+    public function testPauseResumeStatus()
+    {
+        $stopWatch = Stopwatch::create();
+
+        $this->assertFalse($stopWatch->wasStarted());
+        $this->assertFalse($stopWatch->isRunning());
+        $this->assertFalse($stopWatch->wasStopped());
+        $this->assertFalse($stopWatch->isPaused());
+
+        $stopWatch->start();
+
+        $this->assertTrue($stopWatch->wasStarted());
+        $this->assertTrue($stopWatch->isRunning());
+        $this->assertFalse($stopWatch->wasStopped());
+        $this->assertFalse($stopWatch->isPaused());
+
+        $stopWatch->pause();
+
+        $this->assertTrue($stopWatch->wasStarted());
+        $this->assertTrue($stopWatch->isRunning());
+        $this->assertFalse($stopWatch->wasStopped());
+        $this->assertTrue($stopWatch->isPaused());
+
+        $stopWatch->resume();
+
+        $this->assertTrue($stopWatch->wasStarted());
+        $this->assertTrue($stopWatch->isRunning());
+        $this->assertFalse($stopWatch->wasStopped());
+        $this->assertFalse($stopWatch->isPaused());
+
+        $stopWatch->pause();
+
+        $this->assertTrue($stopWatch->wasStarted());
+        $this->assertTrue($stopWatch->isRunning());
+        $this->assertFalse($stopWatch->wasStopped());
+        $this->assertTrue($stopWatch->isPaused());
+
+        $stopWatch->stop();
+
+        $this->assertTrue($stopWatch->wasStarted());
+        $this->assertFalse($stopWatch->isRunning());
+        $this->assertTrue($stopWatch->wasStopped());
+        $this->assertFalse($stopWatch->isPaused());
+    }
+
+    /**
+     * @expectedException \TimeBenchmark\StopwatchException
+     * @expectedExceptionMessage Stopwatch is already paused
+     */
+    public function testCannotPauseWhenPaused()
+    {
+        $this->stopWatch->start();
+        $this->stopWatch->pause();
+        $this->stopWatch->pause();
+    }
+
+    /**
+     * @expectedException \TimeBenchmark\StopwatchException
+     * @expectedExceptionMessage Stopwatch is not paused
+     */
+    public function testCannotResumeWhenNotPaused()
+    {
+        $this->stopWatch->start();
+        $this->stopWatch->resume();
+    }
+
+    /**
+     * @expectedException \TimeBenchmark\StopwatchException
+     * @expectedExceptionMessage Stopwatch was not started
+     */
+    public function testCannotPauseWhenNotStarted()
+    {
+        $this->stopWatch->pause();
+    }
+
+    /**
+     * @expectedException \TimeBenchmark\StopwatchException
+     * @expectedExceptionMessage Stopwatch was not started
+     */
+    public function testCannotResumeWhenNotStarted()
+    {
+        $this->stopWatch->pause();
+    }
+
+    /**
+     * @expectedException \TimeBenchmark\StopwatchException
+     * @expectedExceptionMessage Stopwatch was already stopped
+     */
+    public function testCannotPauseWhenStopped()
+    {
+        $this->stopWatch->start();
+        $this->stopWatch->stop();
+        $this->stopWatch->pause();
+    }
+
+    /**
+     * @expectedException \TimeBenchmark\StopwatchException
+     * @expectedExceptionMessage Stopwatch was already stopped
+     */
+    public function testCannotResumeWhenStopped()
+    {
+        $this->stopWatch->start();
+        $this->stopWatch->stop();
+        $this->stopWatch->pause();
+    }
+
+
+
 }

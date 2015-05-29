@@ -13,13 +13,13 @@
         >
     <testsuites>
         <testsuite name="Time Benchmark Test Suite">
-            <directory>./tests/TimeBenchmark/</directory>
+            <directory>tests/TimeBenchmark/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./src/TimeBenchmark/</directory>
+            <directory>src/TimeBenchmark/</directory>
         </whitelist>
     </filter>
 </phpunit>

@@ -157,6 +157,13 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
         $elapsed = $this->stopWatch->getElapsedMilliseconds();
         $this->assertGreaterThanOrEqual(2, $elapsed);
         $this->assertLessThan(10, $elapsed);
+
+        $elapsedSeconds = $this->stopWatch->getElapsedSeconds();
+        $this->assertGreaterThanOrEqual(0.002, $elapsedSeconds);
+        $this->assertLessThan(0.010, $elapsedSeconds);
+        $elapsedMicroseconds = $this->stopWatch->getElapsedMicroseconds();
+        $this->assertGreaterThanOrEqual(2000, $elapsedMicroseconds);
+        $this->assertLessThan(10000, $elapsedMicroseconds);
     }
 
     public function testElapsedStartWithoutStop()
@@ -193,8 +200,14 @@ class StopwatchTest extends \PHPUnit_Framework_TestCase
         $this->assertLessThan(10, $elapsedSteps['step1']);
         $this->assertGreaterThanOrEqual(10, $elapsedSteps['step2']);
         $this->assertLessThan(18, $elapsedSteps['step2']);
-    }
 
+        $elapsedStepsSeconds = $this->stopWatch->getElapsedStepsSeconds();
+        $this->assertGreaterThanOrEqual(0.002, $elapsedStepsSeconds['step1']);
+        $this->assertLessThan(0.010, $elapsedStepsSeconds['step1']);
+        $elapsedStepsMicroseconds = $this->stopWatch->getElapsedStepsMicroseconds();
+        $this->assertGreaterThanOrEqual(2000, $elapsedStepsMicroseconds['step1']);
+        $this->assertLessThan(10000, $elapsedStepsMicroseconds['step1']);
+    }
 
     /**
      * @expectedException \TimeBenchmark\StopwatchException

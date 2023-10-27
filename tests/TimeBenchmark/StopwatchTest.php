@@ -1,414 +1,386 @@
 <?php
+
+declare(strict_types=1);
+
 namespace TimeBenchmark;
 
-use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
 
 class StopwatchTest extends TestCase
 {
-    /** @var  Stopwatch */
-    private $stopWatch;
-
-    protected function setUp(): void
-    {
-        $this->stopWatch = Stopwatch::create();
-    }
-
     public function testCreateStartedAndStopStatus()
     {
-        $stopWatch = Stopwatch::createStarted();
+        $stopwatch = Stopwatch::createStarted();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertTrue($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
 
-        $stopWatch->stop();
+        $stopwatch->stop();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertFalse($stopWatch->isRunning());
-        $this->assertTrue($stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertFalse($stopwatch->isRunning());
+        self::assertTrue($stopwatch->wasStopped());
     }
 
     public function testCreateAndStopStatus()
     {
-        $stopWatch = Stopwatch::create();
+        $stopwatch = Stopwatch::create();
 
-        $this->assertFalse($stopWatch->wasStarted());
-        $this->assertFalse($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
+        self::assertFalse($stopwatch->wasStarted());
+        self::assertFalse($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
 
-        $stopWatch->start();
+        $stopwatch->start();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertTrue($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
 
-        $stopWatch->stop();
+        $stopwatch->stop();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertFalse($stopWatch->isRunning());
-        $this->assertTrue($stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertFalse($stopwatch->isRunning());
+        self::assertTrue($stopwatch->wasStopped());
     }
 
     public function testCannotStartWhenStarted()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was already started');
-        $this->stopWatch->start();
+        $stopwatch->start();
     }
 
     public function testCannotStopWhenNotStarted()
     {
+        $stopwatch = Stopwatch::create();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was not started');
-        $this->stopWatch->stop();
+        $stopwatch->stop();
     }
 
     public function testCannotStopWhenStopped()
     {
-        $this->stopWatch->start();
-        $this->stopWatch->stop();
+        $stopwatch = Stopwatch::createStarted();
+        $stopwatch->stop();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was already stopped');
-        $this->stopWatch->stop();
+        $stopwatch->stop();
     }
 
     public function testStepsStatus()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
 
-        $this->assertTrue($this->stopWatch->wasStarted());
-        $this->assertTrue($this->stopWatch->isRunning());
-        $this->assertFalse($this->stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
 
-        $this->stopWatch->step('step1');
+        $stopwatch->step('step1');
 
-        $this->assertTrue($this->stopWatch->wasStarted());
-        $this->assertTrue($this->stopWatch->isRunning());
-        $this->assertFalse($this->stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
 
-        $this->stopWatch->step('step2');
+        $stopwatch->step('step2');
 
-        $this->assertTrue($this->stopWatch->wasStarted());
-        $this->assertTrue($this->stopWatch->isRunning());
-        $this->assertFalse($this->stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
 
-        $this->stopWatch->stop();
+        $stopwatch->stop();
 
-        $this->assertTrue($this->stopWatch->wasStarted());
-        $this->assertFalse($this->stopWatch->isRunning());
-        $this->assertTrue($this->stopWatch->wasStopped());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertFalse($stopwatch->isRunning());
+        self::assertTrue($stopwatch->wasStopped());
     }
 
     public function testStepsNumber()
     {
-        $this->stopWatch->start();
-        $this->assertEquals(0, $this->stopWatch->getStepsNumber());
-        $this->stopWatch->step('step1');
-        $this->assertEquals(1, $this->stopWatch->getStepsNumber());
-        $this->stopWatch->step('step2');
-        $this->assertEquals(2, $this->stopWatch->getStepsNumber());
-        $this->stopWatch->step('step3');
-        $this->assertEquals(3, $this->stopWatch->getStepsNumber());
-        $this->stopWatch->stop();
-        $this->assertEquals(3, $this->stopWatch->getStepsNumber());
+        $stopwatch = Stopwatch::createStarted();
+        self::assertEquals(0, $stopwatch->getStepsNumber());
+        $stopwatch->step('step1');
+        self::assertEquals(1, $stopwatch->getStepsNumber());
+        $stopwatch->step('step2');
+        self::assertEquals(2, $stopwatch->getStepsNumber());
+        $stopwatch->step('step3');
+        self::assertEquals(3, $stopwatch->getStepsNumber());
+        $stopwatch->stop();
+        self::assertEquals(3, $stopwatch->getStepsNumber());
     }
 
     public function testCannotStepWhenNotStarted()
     {
+        $stopwatch = Stopwatch::create();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was not started');
-        $this->stopWatch->step('step1');
+        $stopwatch->step('step1');
     }
 
     public function testCannotStepWhenStopped()
     {
-        $this->stopWatch->start();
-        $this->stopWatch->stop();
+        $stopwatch = Stopwatch::createStarted();
+        $stopwatch->stop();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was already stopped');
-        $this->stopWatch->step('step1');
+        $stopwatch->step('step1');
     }
 
     public function testCannotHaveMultipleStepsWithTheSameName()
     {
-        $this->stopWatch->start();
-        $this->stopWatch->step('step1');
+        $stopwatch = Stopwatch::createStarted();
+        $stopwatch->step('step1');
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Step "step1" already used');
-        $this->stopWatch->step('step1');
+        $stopwatch->step('step1');
     }
 
     public function testElapsedStartStop()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         usleep(10_000);
-        $this->stopWatch->stop();
-        $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        try {
-            $this->assertGreaterThanOrEqual(10, $elapsed);
-        } catch (AssertionFailedError $e) {
-            var_dump($this->stopWatch);
-            throw $e;
-        }
-        $this->assertLessThan(50, $elapsed);
+        $stopwatch->stop();
+        $elapsed = $stopwatch->getElapsedMilliseconds();
+        self::assertGreaterThanWithBuffer(10, $elapsed, 40);
 
-        $elapsedSeconds = $this->stopWatch->getElapsedSeconds();
-        $this->assertGreaterThanOrEqual(0.01, $elapsedSeconds);
-        $this->assertLessThan(0.05, $elapsedSeconds);
-        $elapsedMicroseconds = $this->stopWatch->getElapsedMicroseconds();
-        $this->assertGreaterThanOrEqual(10_000, $elapsedMicroseconds);
-        $this->assertLessThan(50_000, $elapsedMicroseconds);
+        $elapsedSeconds = $stopwatch->getElapsedSeconds();
+        self::assertGreaterThanWithBuffer(0.01, $elapsedSeconds, 0.04);
+        $elapsedMicroseconds = $stopwatch->getElapsedMicroseconds();
+        self::assertGreaterThanWithBuffer(10_000, $elapsedMicroseconds, 40_000);
     }
 
     public function testElapsedStartWithoutStop()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         usleep(10_000);
-        $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        $this->assertGreaterThanOrEqual(10, $elapsed);
-        $this->assertLessThan(50, $elapsed);
+        $elapsed = $stopwatch->getElapsedMilliseconds();
+        self::assertGreaterThanWithBuffer(10, $elapsed, 40);
 
-        $elapsedSeconds = $this->stopWatch->getElapsedSeconds();
-        $this->assertGreaterThanOrEqual(0.01, $elapsedSeconds);
-        $this->assertLessThan(0.05, $elapsedSeconds);
-        $elapsedMicroseconds = $this->stopWatch->getElapsedMicroseconds();
-        $this->assertGreaterThanOrEqual(10_000, $elapsedMicroseconds);
-        $this->assertLessThan(50_000, $elapsedMicroseconds);
+        $elapsedSeconds = $stopwatch->getElapsedSeconds();
+        self::assertGreaterThanWithBuffer(0.01, $elapsedSeconds, 0.04);
+        $elapsedMicroseconds = $stopwatch->getElapsedMicroseconds();
+        self::assertGreaterThanWithBuffer(10_000, $elapsedMicroseconds, 40_000);
     }
 
     public function testElapsedStepsWithNoSteps()
     {
-        $this->stopWatch->start();
-        $elapsedSteps = $this->stopWatch->getElapsedStepsMilliseconds();
-        $this->assertEmpty($elapsedSteps);
+        $stopwatch = Stopwatch::createStarted();
+        $elapsedSteps = $stopwatch->getElapsedStepsMilliseconds();
+        self::assertEmpty($elapsedSteps);
     }
 
     public function testElapsedStepsWorks()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         usleep(10_000);
-        $this->stopWatch->step('step1');
+        $stopwatch->step('step1');
         usleep(30_000);
-        $this->stopWatch->step('step2');
+        $stopwatch->step('step2');
         usleep(160_000);
-        $this->stopWatch->stop();
+        $stopwatch->stop();
 
-        $elapsedSteps = $this->stopWatch->getElapsedStepsMilliseconds();
-        $this->assertCount(2, $elapsedSteps);
-        $this->assertArrayHasKey('step1', $elapsedSteps);
-        $this->assertArrayHasKey('step2', $elapsedSteps);
-        $this->assertGreaterThanOrEqual(10, $elapsedSteps['step1']);
-        $this->assertLessThan(50, $elapsedSteps['step1']);
-        $this->assertGreaterThanOrEqual(40, $elapsedSteps['step2']);
-        $this->assertLessThan(80, $elapsedSteps['step2']);
+        $elapsedSteps = $stopwatch->getElapsedStepsMilliseconds();
+        self::assertCount(2, $elapsedSteps);
+        self::assertArrayHasKey('step1', $elapsedSteps);
+        self::assertArrayHasKey('step2', $elapsedSteps);
+        self::assertGreaterThanWithBuffer(10, $elapsedSteps['step1'], 40);
+        self::assertGreaterThanWithBuffer(40, $elapsedSteps['step2'], 40);
 
-        $elapsedStepsSeconds = $this->stopWatch->getElapsedStepsSeconds();
-        $this->assertGreaterThanOrEqual(0.01, $elapsedStepsSeconds['step1']);
-        $this->assertLessThan(0.05, $elapsedStepsSeconds['step1']);
-        $this->assertGreaterThanOrEqual(0.04, $elapsedStepsSeconds['step2']);
-        $this->assertLessThan(0.08, $elapsedStepsSeconds['step2']);
-        $elapsedStepsMicroseconds = $this->stopWatch->getElapsedStepsMicroseconds();
-        $this->assertGreaterThanOrEqual(10_000, $elapsedStepsMicroseconds['step1']);
-        $this->assertLessThan(50_000, $elapsedStepsMicroseconds['step1']);
-        $this->assertGreaterThanOrEqual(40_000, $elapsedStepsMicroseconds['step2']);
-        $this->assertLessThan(80_000, $elapsedStepsMicroseconds['step2']);
+        $elapsedStepsSeconds = $stopwatch->getElapsedStepsSeconds();
+        self::assertGreaterThanWithBuffer(0.01, $elapsedStepsSeconds['step1'], 0.04);
+        self::assertGreaterThanWithBuffer(0.04, $elapsedStepsSeconds['step2'], 0.04);
+        $elapsedStepsMicroseconds = $stopwatch->getElapsedStepsMicroseconds();
+        self::assertGreaterThanWithBuffer(10_000, $elapsedStepsMicroseconds['step1'], 40_000);
+        self::assertGreaterThanWithBuffer(40_000, $elapsedStepsMicroseconds['step2'], 40_000);
     }
 
     public function testElapsedIsNotWorkingWithoutStarting()
     {
+        $stopwatch = Stopwatch::create();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was not started');
-        $this->stopWatch->getElapsedMilliseconds();
+        $stopwatch->getElapsedMilliseconds();
     }
 
     public function testElapsedStepsIsNotWorkingWithoutStarting()
     {
+        $stopwatch = Stopwatch::create();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was not started');
-        $this->stopWatch->getElapsedStepsMilliseconds();
+        $stopwatch->getElapsedStepsMilliseconds();
     }
 
     public function testPauseResumeStatus()
     {
-        $stopWatch = Stopwatch::create();
+        $stopwatch = Stopwatch::create();
 
-        $this->assertFalse($stopWatch->wasStarted());
-        $this->assertFalse($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
-        $this->assertFalse($stopWatch->isPaused());
+        self::assertFalse($stopwatch->wasStarted());
+        self::assertFalse($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
+        self::assertFalse($stopwatch->isPaused());
 
-        $stopWatch->start();
+        $stopwatch->start();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertTrue($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
-        $this->assertFalse($stopWatch->isPaused());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
+        self::assertFalse($stopwatch->isPaused());
 
-        $stopWatch->pause();
+        $stopwatch->pause();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertTrue($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
-        $this->assertTrue($stopWatch->isPaused());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
+        self::assertTrue($stopwatch->isPaused());
 
-        $stopWatch->resume();
+        $stopwatch->resume();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertTrue($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
-        $this->assertFalse($stopWatch->isPaused());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
+        self::assertFalse($stopwatch->isPaused());
 
-        $stopWatch->pause();
+        $stopwatch->pause();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertTrue($stopWatch->isRunning());
-        $this->assertFalse($stopWatch->wasStopped());
-        $this->assertTrue($stopWatch->isPaused());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertTrue($stopwatch->isRunning());
+        self::assertFalse($stopwatch->wasStopped());
+        self::assertTrue($stopwatch->isPaused());
 
-        $stopWatch->stop();
+        $stopwatch->stop();
 
-        $this->assertTrue($stopWatch->wasStarted());
-        $this->assertFalse($stopWatch->isRunning());
-        $this->assertTrue($stopWatch->wasStopped());
-        $this->assertFalse($stopWatch->isPaused());
+        self::assertTrue($stopwatch->wasStarted());
+        self::assertFalse($stopwatch->isRunning());
+        self::assertTrue($stopwatch->wasStopped());
+        self::assertFalse($stopwatch->isPaused());
     }
 
     public function testCannotPauseWhenPaused()
     {
-        $this->stopWatch->start();
-        $this->stopWatch->pause();
+        $stopwatch = Stopwatch::createStarted();
+        $stopwatch->pause();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch is already paused');
-        $this->stopWatch->pause();
+        $stopwatch->pause();
     }
 
     public function testCannotResumeWhenNotPaused()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch is not paused');
-        $this->stopWatch->resume();
+        $stopwatch->resume();
     }
 
     public function testCannotPauseWhenNotStarted()
     {
+        $stopwatch = Stopwatch::create();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was not started');
-        $this->stopWatch->pause();
+        $stopwatch->pause();
     }
 
     public function testCannotResumeWhenNotStarted()
     {
+        $stopwatch = Stopwatch::create();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was not started');
-        $this->stopWatch->resume();
+        $stopwatch->resume();
     }
 
     public function testCannotPauseWhenStopped()
     {
-        $this->stopWatch->start();
-        $this->stopWatch->stop();
+        $stopwatch = Stopwatch::createStarted();
+        $stopwatch->stop();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was already stopped');
-        $this->stopWatch->pause();
+        $stopwatch->pause();
     }
 
     public function testCannotResumeWhenStopped()
     {
-        $this->stopWatch->start();
-        $this->stopWatch->stop();
+        $stopwatch = Stopwatch::createStarted();
+        $stopwatch->stop();
         $this->expectException(StopwatchException::class);
         $this->expectExceptionMessage('Stopwatch was already stopped');
-        $this->stopWatch->resume();
+        $stopwatch->resume();
     }
 
     public function testElapsedStartPauseResumeStop()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         usleep(10_000);
-        $this->stopWatch->pause();
+        $stopwatch->pause();
         usleep(100_000);
-        $this->stopWatch->resume();
+        $stopwatch->resume();
         usleep(10_000);
-        $this->stopWatch->stop();
-        $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        $this->assertGreaterThanOrEqual(20, $elapsed);
-        $this->assertLessThan(60, $elapsed);
+        $stopwatch->stop();
+        $elapsed = $stopwatch->getElapsedMilliseconds();
+        self::assertGreaterThanWithBuffer(20, $elapsed, 40);
     }
 
     public function testElapsedStartPauseStop()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         usleep(10_000);
-        $this->stopWatch->pause();
+        $stopwatch->pause();
         usleep(100_000);
-        $this->stopWatch->stop();
-        $elapsed = $this->stopWatch->getElapsedMilliseconds();
-        $this->assertGreaterThanOrEqual(10, $elapsed);
-        $this->assertLessThan(50, $elapsed);
+        $stopwatch->stop();
+        $elapsed = $stopwatch->getElapsedMilliseconds();
+        self::assertGreaterThanWithBuffer(10, $elapsed, 40);
     }
 
     public function testElapsedStepsWithPause()
     {
-        $this->stopWatch->start();
+        $stopwatch = Stopwatch::createStarted();
         usleep(10_000);
-        $this->stopWatch->pause();
+        $stopwatch->pause();
         usleep(100_000);
-        $this->stopWatch->step('step1');
+        $stopwatch->step('step1');
         usleep(100_000);
-        $this->stopWatch->resume();
+        $stopwatch->resume();
         usleep(20_000);
-        $this->stopWatch->pause();
+        $stopwatch->pause();
         usleep(100_000);
-        $this->stopWatch->resume();
+        $stopwatch->resume();
         usleep(10_000);
-        $this->stopWatch->step('step2');
+        $stopwatch->step('step2');
         usleep(60_000);
-        $this->stopWatch->pause();
+        $stopwatch->pause();
         usleep(100_000);
-        $this->stopWatch->step('step3');
+        $stopwatch->step('step3');
         usleep(100_000);
-        $this->stopWatch->stop();
+        $stopwatch->stop();
 
-        $elapsedSteps = $this->stopWatch->getElapsedStepsMilliseconds();
-        $this->assertCount(3, $elapsedSteps);
-        $this->assertArrayHasKey('step1', $elapsedSteps);
-        $this->assertArrayHasKey('step2', $elapsedSteps);
-        $this->assertArrayHasKey('step3', $elapsedSteps);
-        $this->assertGreaterThanOrEqual(10, $elapsedSteps['step1']);
-        $this->assertLessThan(50, $elapsedSteps['step1']);
-        $this->assertGreaterThanOrEqual(40, $elapsedSteps['step2']);
-        $this->assertLessThan(80, $elapsedSteps['step2']);
-        $this->assertGreaterThanOrEqual(100, $elapsedSteps['step3']);
-        $this->assertLessThan(140, $elapsedSteps['step3']);
+        $elapsedSteps = $stopwatch->getElapsedStepsMilliseconds();
+        self::assertCount(3, $elapsedSteps);
+        self::assertArrayHasKey('step1', $elapsedSteps);
+        self::assertArrayHasKey('step2', $elapsedSteps);
+        self::assertArrayHasKey('step3', $elapsedSteps);
+        self::assertGreaterThanWithBuffer(10, $elapsedSteps['step1'], 40);
+        self::assertGreaterThanWithBuffer(40, $elapsedSteps['step2'], 40);
+        self::assertGreaterThanWithBuffer(100, $elapsedSteps['step3'], 40);
 
-        $elapsedSteps = $this->stopWatch->getElapsedStepsSeconds();
-        $this->assertCount(3, $elapsedSteps);
-        $this->assertArrayHasKey('step1', $elapsedSteps);
-        $this->assertArrayHasKey('step2', $elapsedSteps);
-        $this->assertArrayHasKey('step3', $elapsedSteps);
-        $this->assertGreaterThanOrEqual(0.01, $elapsedSteps['step1']);
-        $this->assertLessThan(0.05, $elapsedSteps['step1']);
-        $this->assertGreaterThanOrEqual(0.04, $elapsedSteps['step2']);
-        $this->assertLessThan(0.08, $elapsedSteps['step2']);
-        $this->assertGreaterThanOrEqual(0.10, $elapsedSteps['step3']);
-        $this->assertLessThan(0.14, $elapsedSteps['step3']);
-        $elapsedSteps = $this->stopWatch->getElapsedStepsMicroseconds();
-        $this->assertCount(3, $elapsedSteps);
-        $this->assertArrayHasKey('step1', $elapsedSteps);
-        $this->assertArrayHasKey('step2', $elapsedSteps);
-        $this->assertArrayHasKey('step3', $elapsedSteps);
-        $this->assertGreaterThanOrEqual(10000, $elapsedSteps['step1']);
-        $this->assertLessThan(50000, $elapsedSteps['step1']);
-        $this->assertGreaterThanOrEqual(40000, $elapsedSteps['step2']);
-        $this->assertLessThan(80000, $elapsedSteps['step2']);
-        $this->assertGreaterThanOrEqual(100000, $elapsedSteps['step3']);
-        $this->assertLessThan(140000, $elapsedSteps['step3']);
+        $elapsedSteps = $stopwatch->getElapsedStepsSeconds();
+        self::assertCount(3, $elapsedSteps);
+        self::assertArrayHasKey('step1', $elapsedSteps);
+        self::assertArrayHasKey('step2', $elapsedSteps);
+        self::assertArrayHasKey('step3', $elapsedSteps);
+        self::assertGreaterThanWithBuffer(0.01, $elapsedSteps['step1'], 0.04);
+        self::assertGreaterThanWithBuffer(0.04, $elapsedSteps['step2'], 0.04);
+        self::assertGreaterThanWithBuffer(0.10, $elapsedSteps['step3'], 0.04);
+        $elapsedSteps = $stopwatch->getElapsedStepsMicroseconds();
+        self::assertCount(3, $elapsedSteps);
+        self::assertArrayHasKey('step1', $elapsedSteps);
+        self::assertArrayHasKey('step2', $elapsedSteps);
+        self::assertArrayHasKey('step3', $elapsedSteps);
+        self::assertGreaterThanWithBuffer(10_000, $elapsedSteps['step1'], 40_000);
+        self::assertGreaterThanWithBuffer(40_000, $elapsedSteps['step2'], 40_000);
+        self::assertGreaterThanWithBuffer(100_000, $elapsedSteps['step3'], 40_000);
     }
 
-    final public static function assertGreaterThanWithBuffer(float $expected, float $actual, float $errorMargin): void
+    private static function assertGreaterThanWithBuffer(float $expected, float $actual, float $errorMargin): void
     {
         self::assertGreaterThanOrEqual($expected, $actual);
         self::assertLessThan($expected + $errorMargin, $actual);

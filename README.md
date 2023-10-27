@@ -1,4 +1,4 @@
-drealecs/time-benchmark [![Build Status](https://travis-ci.org/drealecs/time-benchmark.svg?branch=master)](https://travis-ci.org/drealecs/time-benchmark)
+drealecs/time-benchmark
 =============
 
 Library for timing execution and benchmarking
@@ -20,11 +20,11 @@ A not started stopwatch can be started using
 ``` php
 $stopwatch->start();
 ```
-When a stopwatch is started it can be stoped with
+When a stopwatch is started, it can be stopped with
 ``` php
 $stopwatch->stop();
 ```
-While capturing time, `microtime(false)` is used in order to not loose decimals due to float php precision limit.
+While capturing time, `hrtime()` is used for the best efficiency. On 32-bit runtimes there might be some decimal losses due to float php precision limit but only on microsecond decimals level.
 The methods `start()` and `stop()` are fast and the calculation of the difference is done when calling the methods:
 ``` php
 $seconds = $stopwatch->getElapsedSeconds();
@@ -40,18 +40,18 @@ $stopwatch->wasStopped();
 ```
 
 Another functionality also included is related to steps (or laps).
-When a stopwatch is running steps can be marked without affecting the stopwatch status with:
+When a stopwatch is running, steps can be marked without affecting the stopwatch status with:
 ``` php
 $stopwatch->step($stepName);
 ```
 $stepName is the name of the step and must not be reused for the same stopwatch.
 
-The number of steps can be retrived with
+The number of steps can be retrieved with
 ``` php
 $stopwatch->getStepsNumber();
 ```
 
-There are three methods for retriving the time difference between start and each of the steps. The result is an array indexed by the step name.
+There are three methods for retrieving the time difference between start and each of the steps. The result is an array indexed by the step name.
 ``` php
 $seconds = $stopwatch->getElapsedStepsSeconds();
 $milliseconds = $stopwatch->getElapsedStepsMilliseconds();
@@ -63,4 +63,4 @@ There is support for pausing the stopwatch. The methods to do this are:
 $stopwatch->pause();
 $stopwatch->resume();
 ```
-Of course pausing and resuming is as fast as possible and the calculation is done within the `getElapsed*` methods.
+Pausing and resuming are as fast as possible, and the calculation is done within the `getElapsed*` methods.

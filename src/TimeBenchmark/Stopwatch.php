@@ -1,5 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace TimeBenchmark;
+
+use function hrtime;
 
 final class Stopwatch
 {

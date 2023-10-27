@@ -3,11 +3,11 @@ namespace TimeBenchmark;
 
 final class Stopwatch
 {
-    private $startTime = null;
-    private $stopTime = null;
-    private $stepTimes = [];
-    private $pauseTimes = [];
-    private $resumeTimes = [];
+    private int|float|null $startTime = null;
+    private int|float|null $stopTime = null;
+    private array $stepTimes = [];
+    private array $pauseTimes = [];
+    private array $resumeTimes = [];
 
     private function __construct()
     {
@@ -15,21 +15,19 @@ final class Stopwatch
 
     /**
      * Create a new stopwatch.
-     * @return Stopwatch
      */
-    public static function create()
+    public static function create(): Stopwatch
     {
         return new Stopwatch();
     }
 
     /**
      * Create a new stopwatch and start it.
-     * @return Stopwatch
      */
-    public static function createStarted()
+    public static function createStarted(): Stopwatch
     {
         $instance = new Stopwatch();
-        $instance->startTime = microtime(false);
+        $instance->startTime = hrtime(true);
 
         return $instance;
     }
@@ -38,168 +36,169 @@ final class Stopwatch
      * Start the stopwatch.
      * @throws StopwatchException if the stopwatch was already started
      */
-    public function start()
+    public function start(): void
     {
         $this->validateWasNotStarted();
-        $this->startTime = microtime(false);
+        $this->startTime = hrtime(true);
     }
 
     /**
      * Stop the stopwatch.
      * @throws StopwatchException if the stopwatch is not running
      */
-    public function stop()
+    public function stop(): void
     {
         $this->validateIsRunning();
-        $this->stopTime = microtime(false);
+        $this->stopTime = hrtime(true);
     }
 
     /**
      * Marks a step/lap on the stopwatch.
-     * @param string $name step name
      * @throws StopwatchException if the stopwatch is not running or there is a step name duplication
      */
-    public function step($name)
+    public function step(string $name): void
     {
         $this->validateIsRunning();
         if (isset($this->stepTimes[$name])) {
             throw new StopwatchException('Step "' . $name . '" already used');
         }
-        $this->stepTimes[$name] = microtime(false);
+        $this->stepTimes[$name] = hrtime(true);
     }
 
     /**
-     * Pause the stopwatch. While paused it can be stopped or a step can me marked.
+     * Pause the stopwatch. While paused, it can be stopped or a step can be marked.
      * @throws StopwatchException if the stopwatch is not running or is already paused
      */
-    public function pause()
+    public function pause(): void
     {
         $this->validateIsRunning();
         $this->validateIsNotPaused();
-        $this->pauseTimes[] = microtime(false);
+        $this->pauseTimes[] = hrtime(true);
     }
 
     /**
      * Resume a paused stopwatch.
      * @throws StopwatchException if the stopwatch is not running or is not paused
      */
-    public function resume()
+    public function resume(): void
     {
         $this->validateIsRunning();
         $this->validateIsPaused();
-        $this->resumeTimes[] = microtime(false);
+        $this->resumeTimes[] = hrtime(true);
     }
 
     /**
      * Returns true if the stopwatch was started. After starting it, this method returns true even if stopped or paused.
-     * @return bool
      */
-    public function wasStarted()
+    public function wasStarted(): bool
     {
         return null !== $this->startTime;
     }
 
     /**
      * Returns true if the stopwatch was started and not yet stopped. This method will return true even if it is paused or resumed.
-     * @return bool
      */
-    public function isRunning()
+    public function isRunning(): bool
     {
         return null !== $this->startTime && null === $this->stopTime;
     }
 
     /**
-     * Returns true if the stopwatch was stopped. This is a final state and after stop, it will always return true.
-     * @return bool
+     * Returns true if the stopwatch was stopped. This is a final state, and after stopping it will always return true.
      */
-    public function wasStopped()
+    public function wasStopped(): bool
     {
         return null !== $this->stopTime;
     }
 
     /**
      * Returns true if the stopwatch is paused. When a paused stopwatch is stopped, it is not considered paused anymore.
-     * @return bool
      */
-    public function isPaused()
+    public function isPaused(): bool
     {
         return null !== $this->startTime && null === $this->stopTime && count($this->pauseTimes) === 1 + count($this->resumeTimes);
     }
 
     /**
      * Returns the number of steps marked so far
-     * @return int
      */
-    public function getStepsNumber()
+    public function getStepsNumber(): int
     {
         return count($this->stepTimes);
     }
 
     /**
-     * Calculate the elapsed seconds since the stopwatch started until is was stopped. If the stopwatch is not stopped it will show the current value.
-     * @return float
-     */
-    public function getElapsedSeconds()
-    {
-        return $this->computeElapsed();
-    }
-
-    /**
-     * Calculate the elapsed milliseconds since the stopwatch started until is was stopped. If the stopwatch is not stopped it will show the current value.
-     * @return float
-     */
-    public function getElapsedMilliseconds()
-    {
-        return $this->computeElapsed(1000);
-    }
-
-    /**
-     * Calculate the elapsed microseconds since the stopwatch started until is was stopped. If the stopwatch is not stopped it will show the current value.
-     * @return float
-     */
-    public function getElapsedMicroseconds()
-    {
-        return $this->computeElapsed(1000000);
-    }
-
-    /**
-     * Calculate the elapsed seconds for each step marked since the stopwatch started until is was stopped. The result will be an array with the step name as keys.
-     * @return float[]
-     */
-    public function getElapsedStepsSeconds()
-    {
-        return $this->computeElapsedSteps();
-    }
-
-    /**
-     * Calculate the elapsed milliseconds for each step marked since the stopwatch started until is was stopped. The result will be an array with the step name as keys.
-     * @return float[]
-     */
-    public function getElapsedStepsMilliseconds()
-    {
-        return $this->computeElapsedSteps(1000);
-    }
-
-    /**
-     * Calculate the elapsed microseconds for each step marked since the stopwatch started until is was stopped. The result will be an array with the step name as keys.
-     * @return float[]
-     */
-    public function getElapsedStepsMicroseconds()
-    {
-        return $this->computeElapsedSteps(1000000);
-    }
-
-    /**
-     * @param int $multiplier
-     * @return float
+     * Calculate the elapsed seconds since the stopwatch started until it was stopped.
+     * If the stopwatch is not stopped, it will show the current value.
      * @throws StopwatchException if the stopwatch was not started
      */
-    private function computeElapsed($multiplier = 1)
+    public function getElapsedSeconds(): float
+    {
+        return $this->computeElapsed(1_000_000_000);
+    }
+
+    /**
+     * Calculate the elapsed milliseconds since the stopwatch started until it was stopped.
+     * If the stopwatch is not stopped, it will show the current value.
+     * @throws StopwatchException if the stopwatch was not started
+     */
+    public function getElapsedMilliseconds(): float
+    {
+        return $this->computeElapsed(1_000_000);
+    }
+
+    /**
+     * Calculate the elapsed microseconds since the stopwatch started until it was stopped.
+     * If the stopwatch is not stopped, it will show the current value.
+     * @throws StopwatchException if the stopwatch was not started
+     */
+    public function getElapsedMicroseconds(): float
+    {
+        return $this->computeElapsed(1_000);
+    }
+
+    /**
+     * Calculate the elapsed seconds for each step marked since the stopwatch started until each step.
+     * The result will be an array with the step name as keys.
+     * @return array<string, float>
+     * @throws StopwatchException if the stopwatch was not started
+     */
+    public function getElapsedStepsSeconds(): array
+    {
+        return $this->computeElapsedSteps(1_000_000_000);
+    }
+
+    /**
+     * Calculate the elapsed milliseconds for each step marked since the stopwatch started until each step.
+     * The result will be an array with the step name as keys.
+     * @return array<string, float>
+     * @throws StopwatchException if the stopwatch was not started
+     */
+    public function getElapsedStepsMilliseconds(): array
+    {
+        return $this->computeElapsedSteps(1_000_000);
+    }
+
+    /**
+     * Calculate the elapsed microseconds for each step marked since the stopwatch started until each step.
+     * The result will be an array with the step name as keys.
+     * @return array<string, float>
+     * @throws StopwatchException if the stopwatch was not started
+     */
+    public function getElapsedStepsMicroseconds(): array
+    {
+        return $this->computeElapsedSteps(1_000);
+    }
+
+    /**
+     * @throws StopwatchException if the stopwatch was not started
+     */
+    private function computeElapsed(int $divider): float
     {
         $this->validateWasStarted();
 
         if (null === $this->stopTime) {
-            $stopTime = microtime(false);
+            $stopTime = hrtime(true);
         } else {
             $stopTime = $this->stopTime;
         }
@@ -207,22 +206,20 @@ final class Stopwatch
         $pauseDifference = 0;
         foreach ($this->pauseTimes as $pauseTimeIndex => $pauseTime) {
             if (isset($this->resumeTimes[$pauseTimeIndex])) {
-                $resumeTime = $this->resumeTimes[$pauseTimeIndex];
-                $pauseDifference += $this->calculateDifference($pauseTime, $resumeTime, $multiplier);
+                $pauseDifference += $this->resumeTimes[$pauseTimeIndex] - $pauseTime;
             } else {
                 $stopTime = $pauseTime;
             }
         }
 
-        return $this->calculateDifference($this->startTime, $stopTime, $multiplier) - $pauseDifference;
+        return ($stopTime - $this->startTime - $pauseDifference) / $divider;
     }
 
     /**
-     * @param int $multiplier
-     * @return float
+     * @return array<string, float>
      * @throws StopwatchException if the stopwatch was not started
      */
-    private function computeElapsedSteps($multiplier = 1)
+    private function computeElapsedSteps(int $divider): array
     {
         $this->validateWasStarted();
 
@@ -252,7 +249,7 @@ final class Stopwatch
                         if ($resumeTime < $stepTime) {
                             $pauseState = false;
                             $pauseTimeIndex++;
-                            $pauseDifference += $this->calculateDifference($pauseLastTime, $resumeTime, $multiplier);
+                            $pauseDifference += $resumeTime - $pauseLastTime;
                         } else {
                             $stepTime = $pauseLastTime;
                             $stepReached = true;
@@ -263,30 +260,16 @@ final class Stopwatch
                     }
                 }
             } while (!$stepReached);
-            $differenceSteps[$stepName] = $this->calculateDifference($this->startTime, $stepTime, $multiplier) - $pauseDifference;
+            $differenceSteps[$stepName] = ($stepTime - $this->startTime - $pauseDifference) / $divider;
         }
 
         return $differenceSteps;
     }
 
     /**
-     * @param string $startTime
-     * @param string $stopTime
-     * @param int $multiplier
-     * @return float
-     */
-    private function calculateDifference($startTime, $stopTime, $multiplier)
-    {
-        list ($startMilliseconds, $startSeconds) = explode(' ', $startTime);
-        list ($endMilliseconds, $endSeconds) = explode(' ', $stopTime);
-
-        return $multiplier * (($endSeconds - $startSeconds) + ($endMilliseconds - $startMilliseconds));
-    }
-
-    /**
      * @throws StopwatchException
      */
-    private function validateWasNotStarted()
+    private function validateWasNotStarted(): void
     {
         if (null !== $this->startTime) {
             throw new StopwatchException('Stopwatch was already started');
@@ -296,7 +279,7 @@ final class Stopwatch
     /**
      * @throws StopwatchException
      */
-    private function validateWasStarted()
+    private function validateWasStarted(): void
     {
         if (null === $this->startTime) {
             throw new StopwatchException('Stopwatch was not started');
@@ -306,7 +289,7 @@ final class Stopwatch
     /**
      * @throws StopwatchException
      */
-    private function validateWasNotStopped()
+    private function validateWasNotStopped(): void
     {
         if (null !== $this->stopTime) {
             throw new StopwatchException('Stopwatch was already stopped');
@@ -316,7 +299,7 @@ final class Stopwatch
     /**
      * @throws StopwatchException
      */
-    private function validateIsRunning()
+    private function validateIsRunning(): void
     {
         $this->validateWasStarted();
         $this->validateWasNotStopped();
@@ -325,7 +308,7 @@ final class Stopwatch
     /**
      * @throws StopwatchException
      */
-    private function validateIsNotPaused()
+    private function validateIsNotPaused(): void
     {
         if (count($this->pauseTimes) === 1 + count($this->resumeTimes)) {
             throw new StopwatchException('Stopwatch is already paused');
@@ -335,7 +318,7 @@ final class Stopwatch
     /**
      * @throws StopwatchException
      */
-    private function validateIsPaused()
+    private function validateIsPaused(): void
     {
         if (count($this->pauseTimes) === count($this->resumeTimes)) {
             throw new StopwatchException('Stopwatch is not paused');

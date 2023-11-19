@@ -6,7 +6,7 @@ namespace TimeBenchmark;
 
 use function hrtime;
 
-final class Stopwatch
+final class Stopwatch implements StopwatchInterface
 {
     private int|float|null $startTime = null;
     private int|float|null $stopTime = null;
